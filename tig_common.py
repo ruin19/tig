@@ -219,3 +219,25 @@ def save_commit_info(data):
     # 更新refs/headers/main指针的哈希值
     with open (main_file(), 'w') as file:
         file.write(md5_hash)
+
+def local_files():
+    """
+    返回本地文件列表
+    """
+    paths = []
+    directory = project_directory()
+    for root, dirs, files in os.walk(directory):
+        if '.tig' in dirs:
+            dirs.remove('.tig')
+        for file in files:
+            abs_path = os.path.join(root, file)
+            rel_path = os.path.relpath(abs_path, directory)
+            paths.append(rel_path)
+    return paths
+
+def file_md5(filename):
+    with open(filename, 'rb') as file:
+        md5_hash = hashlib.md5()
+        while chunk := file.read(4096):
+            md5_hash.update(chunk)
+    return md5_hash.hexdigest()
