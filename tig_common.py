@@ -2,6 +2,10 @@ import os
 import json
 import hashlib
 
+RED = '\033[31;1m'
+GREEN = '\033[36;1m'
+END = '\033[0m'
+
 def tig_directory():
     """
     返回.tig路径

@@ -67,21 +67,20 @@ class Tree:
         return None
 
     def file_paths(self):
-        paths = []
+        path_md5s = {}
         if self.rootNode:
-            self.file_paths_of_node(paths, self.rootNode, "")
-        paths.sort()
-        return paths
+            self.file_paths_of_node(path_md5s, self.rootNode, "")
+        return path_md5s
 
 
-    def file_paths_of_node(self, paths, node, prefix):
+    def file_paths_of_node(self, path_md5s, node, prefix):
         if prefix:
             prefix = prefix + "/" + node.name
         else:
             prefix = node.name
 
         if node.node_type == NodeType.BLOB:
-            paths.append(prefix)
+            path_md5s[prefix] = node.md5
         else:
             for child in node.children:
-                self.file_paths_of_node(paths, child, prefix)
+                self.file_paths_of_node(path_md5s, child, prefix)
