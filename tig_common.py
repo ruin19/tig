@@ -228,14 +228,20 @@ def local_files():
     """
     返回本地文件列表
     """
+    return local_files_in_directory(project_directory())
+
+def local_files_in_directory(directory):
+    """
+    返回指定文件夹下的本地文件列表
+    """
     paths = []
-    directory = project_directory()
+    project_dir = project_directory()
     for root, dirs, files in os.walk(directory):
         if '.tig' in dirs:
             dirs.remove('.tig')
         for file in files:
             abs_path = os.path.join(root, file)
-            rel_path = os.path.relpath(abs_path, directory)
+            rel_path = os.path.relpath(abs_path, project_dir)
             paths.append(rel_path)
     return paths
 

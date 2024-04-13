@@ -1,22 +1,36 @@
 import os
 import zipfile
+from tig_tree import *
 
 from tig_common import *
 
-def tig_add(files):
-    for file in files:
-        if not os.path.exists(file):
-            print("file: " + file + " not exist")
-            return
-        if os.path.isdir(file):
-            print(file + " is a directory, please input a file path")
-            return
+def tig_add(paths):
+    files = []
+    for path in paths:
+        if path == ".":
+            path = os.getcwd()
+        if not os.path.exists(path):
+            print("path: " + path + " not exist")
+            continue
+        if os.path.isdir(path):
+            files_in_dir = local_files_in_directory(path)
+            files.extend(files_in_dir)
+        else:
+            files.append(path)
 
+    tree = Tree()
+    tree.load_commit_tree()
+    # 已提交的 文件 - md5 映射
+    commit_file_paths = tree.file_paths()
+
+    for file in files:
         md5 = file_md5(file)
         compress_file_path = os.path.join(tig_objects_directory(), md5)
         if os.path.exists(compress_file_path):
-            return
-        compress_files(file, compress_file_path)
+            if file in commit_file_paths and commit_file_paths[file] == md5:
+                continue
+        else:
+            compress_files(file, compress_file_path)
         update_index(file, md5)
 
 def compress_files(file, zip_name):
