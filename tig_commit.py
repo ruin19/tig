@@ -1,6 +1,8 @@
 import copy
+from datetime import datetime
 from tig_common import *
 from tig_tree import *
+
 
 class Committer:
     path_node_dict = {}
@@ -9,7 +11,7 @@ class Committer:
     def __init__(self) -> None:
         pass
 
-    def commit(self):
+    def commit(self, message):
         data = read_uncommited_files()
         if not bool(data):
             return
@@ -26,7 +28,7 @@ class Committer:
         for node in self.path_node_dict.values():
             node.save_to_file()
         
-        self.save_commit_info_to_file()
+        self.save_commit_info_to_file(message)
 
         # 清空未提交文件的记录
         save_uncommited_files({})
@@ -68,7 +70,7 @@ class Committer:
         if path:
             self.update_node(parent_dir, "", NodeType.TREE, node)
 
-    def save_commit_info_to_file(self):
+    def save_commit_info_to_file(self, message):
         """
         更新objects/[commit文件]
         """
@@ -83,16 +85,22 @@ class Committer:
             return
         
         data = {"md5": root_node.md5} 
+        print(message)
+        data["message"] = message
+
+        current_datetime = datetime.now()
+        formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        data["time"] = formatted_datetime
         # 上一次commit的md5
         parent_commit_md5 = head_commit_md5()
         if parent_commit_md5:
             data["parent"] = [{"md5": parent_commit_md5}]
         save_commit_info(data)
-
-
-
         
 
-def tig_commit():
-    committer = Committer()
-    committer.commit()
+def tig_commit(option, message):
+    if option == '-m':
+        committer = Committer()
+        committer.commit(message)
+    else:
+        print("Invalid option. Please use '-m'")
