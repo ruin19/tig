@@ -27,10 +27,12 @@ def tig_status():
             else:
                 print(GREEN + "\tnew file\t" + file + END)
 
+    project_dir = project_directory()
+
     untracked_files = []
     modified_files = []
     for file in local_file_paths:
-        local_md5 = file_md5(file)
+        local_md5 = file_md5(os.path.join(project_dir, file))
         if not file in commit_file_paths:
             if not file in uncommited_files:
                 untracked_files.append(file)

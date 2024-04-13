@@ -6,6 +6,7 @@ from tig_common import *
 
 def tig_add(paths):
     files = []
+    project_dir = project_directory()
     for path in paths:
         if path == ".":
             path = os.getcwd()
@@ -14,7 +15,9 @@ def tig_add(paths):
             continue
         if os.path.isdir(path):
             files_in_dir = local_files_in_directory(path)
-            files.extend(files_in_dir)
+            for f in files_in_dir:
+                f_rel_current = os.path.relpath(os.path.join(project_dir, f), os.getcwd())
+                files.append(f_rel_current)
         else:
             files.append(path)
 
@@ -24,10 +27,11 @@ def tig_add(paths):
     commit_file_paths = tree.file_paths()
 
     for file in files:
+        file_rel_project = os.path.relpath(file, project_dir)
         md5 = file_md5(file)
         compress_file_path = os.path.join(tig_objects_directory(), md5)
         if os.path.exists(compress_file_path):
-            if file in commit_file_paths and commit_file_paths[file] == md5:
+            if file_rel_project in commit_file_paths and commit_file_paths[file_rel_project] == md5:
                 continue
         else:
             compress_files(file, compress_file_path)

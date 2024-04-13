@@ -246,6 +246,9 @@ def local_files_in_directory(directory):
     return paths
 
 def file_md5(filename):
+    """
+    计算文件的md5
+    """
     with open(filename, 'rb') as file:
         md5_hash = hashlib.md5()
         while chunk := file.read(4096):
