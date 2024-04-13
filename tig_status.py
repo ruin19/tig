@@ -57,4 +57,6 @@ def fetch_status():
                         modified_files.append(file)
                 else:
                     modified_files.append(file)
+    modified_files.sort()
+    untracked_files.sort()
     return committed_files, uncommited_files, modified_files, untracked_files

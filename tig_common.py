@@ -169,6 +169,8 @@ def read_commit_or_tree_info(md5):
     commit文件内容类似:
     {
       "md5": "1645257b2614938d30d3bd3f3eaee5950108769c",
+      "message": "first commit",
+      "time": "2024-04-13 16:45:49",
       "parent": [
         {
           "md5": "fc0dd6844a568679bd41a33495ecaf8c93edbec7"

@@ -6,6 +6,7 @@ from tig_add import tig_add
 from tig_commit import tig_commit
 from tig_status import tig_status
 from tig_diff import tig_diff
+from tig_log import tig_log
 from tig_catfile import tig_catfile
 from tig_reset import tig_reset
 
@@ -15,7 +16,7 @@ args = sys.argv[1:]
 # 检查命令行参数并执行相应的操作
 if len(args) == 0:
     print("Usage: tig <command>")
-    print("Available commands: init, add, commit, status, diff, reset, cat-file")
+    print("Available commands: init, add, commit, status, diff, log, reset, cat-file")
 elif args[0] == "init":
     tig_init()
 elif args[0] == "add":
@@ -33,6 +34,8 @@ elif args[0] == "status":
     tig_status()
 elif args[0] == "diff":
     tig_diff()
+elif args[0] == "log":
+    tig_log()
 elif args[0] == "reset":
     tig_reset()
 elif args[0] == "cat-file":
