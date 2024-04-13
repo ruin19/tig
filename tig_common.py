@@ -78,19 +78,33 @@ def tig_refs_heads_directory():
     else:
         return None
 
-def main_file():
+def head_pointer_file():
     """
-    返回.git/refs/heads/main的文件路径
+    返回HEAD指针路径: .tig/HEAD
     """
-    refs_heads_dir = tig_refs_directory()
-    if not refs_heads_dir:
-        return None
-    
-    main_file_path = os.path.join(refs_heads_dir, 'main')
-    if not os.path.exists(main_file_path):
-        with open (main_file_path, 'w') as file:
+    return os.path.join(tig_directory(), "HEAD")
+
+def branch_file():
+    """
+    返回HEAD指针指向的分支文件的路径, 例如:
+    .tig/refs/heads/main
+    .tig/refs/heads/[branchname]
+    """
+    head_pointer = head_pointer_file()
+    head_content = ""
+    if not os.path.exists(head_pointer):
+        with open(head_pointer, 'w') as file:
+            head_content = "refs/heads/main"
+            file.write(head_content)
+    else:
+        with open(head_pointer, 'r') as file:
+            head_content = file.read()
+
+    branch_file_path = os.path.join(tig_directory(), head_content)
+    if not os.path.exists(branch_file_path):
+        with open (branch_file_path, 'w') as file:
             pass
-    return main_file_path
+    return branch_file_path
 
 def index_file():
     """
@@ -138,10 +152,10 @@ def head_commit_md5():
     """
 
     # 暂未考虑分支，直接从main中读
-    main_file_path = main_file()
-    if not main_file_path:
+    branch_file_path = branch_file()
+    if not branch_file_path:
         return None
-    with open (main_file_path, 'r') as file:
+    with open (branch_file_path, 'r') as file:
         content = file.read()
         if not content:
             return None
@@ -221,7 +235,7 @@ def save_commit_info(data):
     md5_hash = save_commit_or_tree_info(data)
 
     # 更新refs/headers/main指针的哈希值
-    with open (main_file(), 'w') as file:
+    with open (branch_file(), 'w') as file:
         file.write(md5_hash)
 
 def local_files():
