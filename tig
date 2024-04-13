@@ -7,8 +7,9 @@ from tig_commit import tig_commit
 from tig_status import tig_status
 from tig_diff import tig_diff
 from tig_log import tig_log
-from tig_catfile import tig_catfile
 from tig_reset import tig_reset
+from tig_branch import tig_branch
+from tig_catfile import tig_catfile
 
 # 获取命令行参数
 args = sys.argv[1:]
@@ -16,7 +17,7 @@ args = sys.argv[1:]
 # 检查命令行参数并执行相应的操作
 if len(args) == 0:
     print("Usage: tig <command>")
-    print("Available commands: init, add, commit, status, diff, log, reset, cat-file")
+    print("Available commands: init, add, commit, status, diff, log, reset, branch, cat-file")
 elif args[0] == "init":
     tig_init()
 elif args[0] == "add":
@@ -38,6 +39,12 @@ elif args[0] == "log":
     tig_log()
 elif args[0] == "reset":
     tig_reset()
+elif args[0] == "branch":
+    args = sys.argv[2:]
+    if len(args) < 1:
+        print("Invalid number of arguments")
+        sys.exit(1)
+    tig_branch(args)
 elif args[0] == "cat-file":
     args = sys.argv[2:]
     if len(args) != 2:

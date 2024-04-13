@@ -148,7 +148,7 @@ def save_uncommited_files(data):
 
 def head_commit_md5():
     """
-    返回refs/headers/main指针指向的commit的md5
+    返回HEAD指向的分支指向的commit的md5
     """
 
     # 暂未考虑分支，直接从main中读
