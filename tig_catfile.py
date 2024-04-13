@@ -13,17 +13,19 @@ def tig_catfile(option, file_md5):
         print("Invalid option. Please use '-p' or '-t'.")
 
 def print_file_content(file_md5):
+    print(md5_file_content(file_md5))
+
+def md5_file_content(file_md5):
     objects_dir = tig_objects_directory()
     file_path = os.path.join(objects_dir, file_md5)
     if os.path.exists(file_path):
-        print_zip_file(file_path)
+        return zip_file_content(file_path)
     else:
-        print("md5: " + file_md5 + " not exist")
+        return None
 
-
-def print_zip_file(zip_file):
+def zip_file_content(zip_file):
     with zipfile.ZipFile(zip_file, 'r') as zipf:
         extracted_file = zipf.namelist()[0]
         with zipf.open(extracted_file, 'r') as file:
             content = file.read().decode('utf-8')
-            print(content)
+            return content
