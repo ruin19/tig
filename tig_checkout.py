@@ -8,3 +8,4 @@ def tig_checkout(args):
         head_pointer = head_pointer_file()
         with open(head_pointer, 'w') as file:
             file.write(content)
+        print("Switch to branch " + arg)
