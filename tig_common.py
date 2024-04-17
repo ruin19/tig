@@ -151,7 +151,6 @@ def head_commit_md5():
     返回HEAD指向的分支指向的commit的md5
     """
 
-    # 暂未考虑分支，直接从main中读
     branch_file_path = branch_file()
     if not branch_file_path:
         return None
