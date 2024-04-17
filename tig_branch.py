@@ -19,21 +19,20 @@ def is_valid_path(path):
 
 def show_branches():
     heads_dir = tig_refs_heads_directory()
-    current_branch_file = branch_file()
-    for root, dirs, files in os.walk(heads_dir):
-        for file in files:
-            is_current_branch = False
-            abs_path = os.path.join(root, file)
-            if abs_path == current_branch_file:
-                is_current_branch = True
-            rel_path = os.path.relpath(abs_path, heads_dir)
-            with open (abs_path, 'r') as file:
-                md5 = file.read()
-                commit_info = read_commit_or_tree_info(md5)
-                if is_current_branch:
-                    print("*", GREEN + rel_path + END, md5, commit_info["message"])
-                else:
-                    print(" ", rel_path, md5, commit_info["message"])
+    current_branch = current_branch_file()
+    branches = branch_names()
+    for branch in branches:
+        is_current_branch = False
+        abs_path = os.path.join(heads_dir, branch)
+        if abs_path == current_branch:
+            is_current_branch = True
+        with open (abs_path, 'r') as file:
+            md5 = file.read()
+            commit_info = read_commit_or_tree_info(md5)
+            if is_current_branch:
+                print("*", GREEN + branch + END, md5, commit_info["message"])
+            else:
+                print(" ", branch, md5, commit_info["message"])
 
 def create_branch(path):
     abs_path = os.path.join(tig_refs_heads_directory(), path)
