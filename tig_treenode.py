@@ -25,6 +25,12 @@ class TreeNode:
                 break
         self.children.append(child)
 
+    def remove_child_by_name(self, name):
+        for my_child in self.children:
+            if my_child.name == name:
+                self.children.remove(my_child)
+                break
+
     def description(self):
         nodes = []
         for child in self.children:

@@ -3,7 +3,7 @@ from tig_status import *
 from tig_catfile import *
 
 def tig_diff():
-    commited_files, uncommited_files, modified_files, untracked_files = fetch_status()
+    commited_files, uncommited_files, modified_files, untracked_files, deleted_files = fetch_status()
     project_dir = project_directory()
     for file in modified_files:
         md5 = ""

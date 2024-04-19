@@ -23,8 +23,8 @@ class Committer:
         sorted_keys = sorted(keys, reverse=True)
 
         for path in sorted_keys:
-            self.process(path, data[path])
-        
+            self.process_file(path, data[path])
+
         for node in self.path_node_dict.values():
             node.save_to_file()
         
@@ -34,29 +34,32 @@ class Committer:
         save_uncommited_files({})
 
 
-    def process(self, file_path, md5):
+    def process_file(self, file_path, md5):
         """
         处理一个uncommited文件, 更新树节点
         """
-        self.update_node(file_path, md5, NodeType.BLOB, None)
+        self.update_node(file_path, md5, NodeType.BLOB, None, None)
 
-    
-    def update_node(self, path, md5, node_type, child):
+    def update_node(self, path, md5, node_type, child, delete_name):
         """
-        递归地创建或更新树节点, 如果是blob类型, child可以是空. 如果是tree类型, md5可以是空, 自己负责计算
+        从叶子节点向父节点递归地创建/更新树节点
+        如果是blob类型, child是空. md5非空表示新增或修改的文件节点, 为空则是删除的文件
+        如果是tree类型, md5是空, 自己负责计算. child非空表示新增的子节点, child为空且delete_name存在则表示删除一个子节点
         """
         name = path.rsplit("/", 1)[-1]
         parent_dir = os.path.dirname(path) 
-        # print("update_node parent_dir: " + parent_dir + " name: " + name)
+        # print("update_node parent_dir: " + parent_dir + " name: " + name + " node_type: ", node_type)
+        node = None
         if node_type == NodeType.BLOB:
-            node = TreeNode(name, md5, node_type)
-            self.path_node_dict[path] = node
+            if md5:
+                node = TreeNode(name, md5, NodeType.BLOB)
+                self.path_node_dict[path] = node
+                delete_name = None
+            else:
+                delete_name = name
         else:
             node = self.path_node_dict.get(path)
-            if node:
-                node.add_child(child)
-                node.update_md5()
-            else:
+            if not node:
                 old_node = self.tree.node_of_path(path)
                 node = None
                 if old_node:
@@ -64,11 +67,14 @@ class Committer:
                 else:
                     node = TreeNode(name, "", NodeType.TREE)
                 self.path_node_dict[path] = node
+            if child:
                 node.add_child(child)
-                node.update_md5()
+            elif delete_name:
+                node.remove_child_by_name(delete_name)
+            node.update_md5()
 
         if path:
-            self.update_node(parent_dir, "", NodeType.TREE, node)
+            self.update_node(parent_dir, "", NodeType.TREE, node, delete_name)
 
     def save_commit_info_to_file(self, message):
         """
@@ -85,7 +91,7 @@ class Committer:
             return
         
         data = {"md5": root_node.md5} 
-        print(message)
+        # print(message)
         data["message"] = message
 
         current_datetime = datetime.now()

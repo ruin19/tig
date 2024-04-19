@@ -3,22 +3,31 @@ from tig_common import *
 from tig_tree import *
 
 def tig_status():
-    commited_files, uncommited_files, modified_files, untracked_files = fetch_status()
+    commited_files, uncommited_files, modified_files, untracked_files, deleted_files = fetch_status()
 
     # 打印暂存区文件
     if uncommited_files:
         print("Changes to be committed:")
         for file in uncommited_files.keys():
             if file in commited_files:
-                print(GREEN + "\tmodified\t" + file + END)
+                if uncommited_files[file]:
+                    print(GREEN + "\tmodified:\t" + file + END)
+                else:
+                    print(GREEN + "\tdeleted:\t" + file + END)
+
             else:
                 print(GREEN + "\tnew file\t" + file + END)
 
     # 打印修改后未提交暂存区的文件
-    if modified_files:
+    if modified_files or deleted_files:
         print("Changes not staged for commit:")
+
+        for file in deleted_files:
+            print(RED + "\t" + "deleted:\t" + file + END)
+
         for file in modified_files:
-            print(RED + "\t" + file + END)
+            print(RED + "\t" + "modified:\t" + file + END)
+
 
     # 打印新增的未提交暂存区的文件
     if untracked_files:
@@ -42,6 +51,8 @@ def fetch_status():
 
     modified_files = []
     untracked_files = []
+
+    # 遍历本地文件，看是否已在版本库，是否在暂存区，以及md5是否跟版本库或暂存区相同来判断处于什么状态
     for file in local_file_paths:
         local_md5 = file_md5(os.path.join(project_dir, file))
         if not file in committed_files:
@@ -59,4 +70,15 @@ def fetch_status():
                     modified_files.append(file)
     modified_files.sort()
     untracked_files.sort()
-    return committed_files, uncommited_files, modified_files, untracked_files
+
+    deleted_files = []
+    for file in committed_files.keys():
+        if not file in local_file_paths:
+            if not file in uncommited_files or uncommited_files[file]:
+                deleted_files.append(file)
+    
+    for file in uncommited_files.keys():
+        if uncommited_files[file] and file not in local_file_paths:
+            deleted_files.append(file)
+
+    return committed_files, uncommited_files, modified_files, untracked_files, deleted_files

@@ -67,6 +67,9 @@ class Tree:
         return None
 
     def file_paths(self):
+        """
+        返回树中所有文件及其md5, 格式是{path: md5}
+        """
         path_md5s = {}
         if self.rootNode:
             self.file_paths_of_node(path_md5s, self.rootNode, "")
