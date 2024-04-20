@@ -23,7 +23,7 @@ def diff(paths):
     打印指定目录或文件的diff,若不指定,则是仓库下所有的diff
     """
     commited_files, uncommited_files, modified_files, untracked_files, deleted_files = fetch_status()
-    diff_files = modified_files 
+    diff_files = modified_files + deleted_files
     if paths:
         # 有路径限制的情况
         diff_files = [path for path in diff_files if any(path.startswith(prefix) for prefix in paths)]
@@ -35,11 +35,14 @@ def diff(paths):
         else:
             md5 = commited_files[file]
         f1_content = md5_file_content(md5)
+        lines1 = f1_content.splitlines()
 
         file_abs = os.path.join(project_dir, file)
-        with open(file_abs, "r", encoding='utf-8') as f2:
-            lines1 = f1_content.splitlines()
-            lines2 = f2.read().splitlines()
+        if os.path.exists(file_abs):
+            with open(file_abs, "r", encoding='utf-8') as f2:
+                lines2 = f2.read().splitlines()
+        else:
+            lines2 = []
         
         diff = difflib.unified_diff(lines1, lines2, fromfile="a/"+file, tofile="b/"+file)
         for line in diff:
