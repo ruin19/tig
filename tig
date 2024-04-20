@@ -31,11 +31,12 @@ elif args[0] == "commit":
         sys.exit(1)
     option = args[0]
     message = args[1]
-    tig_commit(option, message)
+    tig_commit(option, message) 
 elif args[0] == "status":
     tig_status()
 elif args[0] == "diff":
-    tig_diff()
+    args = sys.argv[2:]
+    tig_diff(args)
 elif args[0] == "log":
     tig_log()
 elif args[0] == "reset":
@@ -48,8 +49,8 @@ elif args[0] == "branch":
     tig_branch(args)
 elif args[0] == "checkout":
     args = sys.argv[2:]
-    if len(args) != 1:
-        print("Invalid number of arguments")
+    if len(args) < 1:
+        print("Invalid number of arguments. Usage: tig checkout <branch> or tig checkout <paths>")
         sys.exit(1)
     tig_checkout(args)
 elif args[0] == "cat-file":
